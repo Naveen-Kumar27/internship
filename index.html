@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stylish Quiz App</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    #quiz-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .option {
+      display: block;
+      width: 100%;
+      padding: 12px 20px;
+      margin: 10px 0;
+      background-color: #f1f1f1;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    .option:hover {
+      background-color: #dcdcdc;
+    }
+
+    .option.correct {
+      background-color: #2ecc71 !important;
+      color: white;
+    }
+
+    .option.incorrect {
+      background-color: #e74c3c !important;
+      color: white;
+    }
+
+    button#next-btn {
+      padding: 10px 25px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: background-color 0.3s;
+    }
+
+    button#next-btn:hover {
+      background-color: #2980b9;
+    }
+
+    #score {
+      font-size: 20px;
+      margin-top: 20px;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+
+<div id="quiz-container">
+  <h2 id="question">Loading question...</h2>
+  <div id="options"></div>
+  <button id="next-btn" onclick="nextQuestion()">Next</button>
+  <div id="score"></div>
+</div>
+
+<script>
+  const quiz = [
+    
+    {
+      question: "Which tag is used for JavaScript?",
+      options: ["<script>", "<java>", "<js>", "<code>"],
+      answer: "<script>"
+    },
+    {
+      question: "CSS stands for?",
+      options: ["Color Style Sheet", "Cascading Style Sheet", "Computer Style Sheet", "Creative Style Syntax"],
+      answer: "Cascading Style Sheet"
+    },
+    
+    {
+  question: "Which language is primarily used for styling web pages?",
+  options: ["HTML", "CSS", "Python", "Java"],
+  answer: "CSS"
+},
+{
+  question: "What does HTML stand for?",
+  options: ["HyperText Markdown Language", "HyperText Markup Language", "HighText Machine Language", "None"],
+  answer: "HyperText Markup Language"
+},
+{
+  question: "What does RAM stand for?",
+  options: ["Random Access Memory", "Read Access Memory", "Run Access Memory", "Real-time Application Memory"],
+  answer: "Random Access Memory"
+},
+{
+  question: "Which tag is used to create a hyperlink in HTML?",
+  options: ["<a>", "<link>", "<href>", "<button>"],
+  answer: "<a>"
+},
+
+{
+  question: "Which of the following is a JavaScript framework?",
+  options: ["React", "Laravel", "Flask", "Django"],
+  answer: "React"
+},
+  {
+    question: "Which HTML attribute is used to define inline styles?",
+    options: ["class", "style", "font", "id"],
+    answer: "style"
+  },
+  {
+    question: "Which CSS property controls the text size?",
+    options: ["font-style", "text-size", "font-size", "text-style"],
+    answer: "font-size"
+  },
+  {
+    question: "What is the correct way to write a comment in HTML?",
+    options: ["<!-- Comment -->", "// Comment", "# Comment", "** Comment **"],
+    answer: "<!-- Comment -->"
+  },
+  {
+    question: "Which of the following is NOT a valid input type in HTML?",
+    options: ["text", "email", "range", "slide"],
+    answer: "slide"
+  },
+  {
+    question: "In CSS, what does the 'z-index' property control?",
+    options: [
+      "Zoom level of text",
+      "Layer position of elements",
+      "Font weight",
+      "Color contrast"
+    ],
+    answer: "Layer position of elements"
+  },
+  {
+    question: "Which JavaScript method can be used to select elements with a class name?",
+    options: [
+      "getElementById()",
+      "querySelector()",
+      "getElementsByClassName()",
+      "getElementsByTagName()"
+    ],
+    answer: "getElementsByClassName()"
+  },
+  {
+    question: "Which tag is used to embed JavaScript code in HTML?",
+    options: ["<js>", "<script>", "<javascript>", "<code>"],
+    answer: "<script>"
+  },
+  {
+    question: "Which of the following is a semantic HTML tag?",
+    options: ["<div>", "<section>", "<span>", "<b>"],
+    answer: "<section>"
+  },
+  {
+    question: "Which protocol is used to load web pages?",
+    options: ["FTP", "SMTP", "HTTP", "SSH"],
+    answer: "HTTP"
+  },
+  {
+    question: "In JavaScript, which keyword is used to define a constant?",
+    options: ["const", "var", "let", "define"],
+    answer: "const"
+  }
+];
+
+
+  let current = 0;
+  let score = 0;
+
+  function loadQuestion() {
+    const q = quiz[current];
+    document.getElementById("question").textContent = q.question;
+    const options = document.getElementById("options");
+    options.innerHTML = "";
+
+    q.options.forEach(option => {
+      const btn = document.createElement("button");
+      btn.className = "option";
+      btn.textContent = option;
+      btn.onclick = () => selectAnswer(btn, option);
+      options.appendChild(btn);
+    });
+  }
+
+  function selectAnswer(btn, selected) {
+    const correct = quiz[current].answer;
+    const allOptions = document.querySelectorAll(".option");
+
+    allOptions.forEach(option => {
+      option.disabled = true;
+      if (option.textContent === correct) {
+        option.classList.add("correct");
+      }
+    });
+
+    if (selected === correct) {
+      btn.classList.add("correct");
+      score++;
+    } else {
+      btn.classList.add("incorrect");
+    }
+  }
+
+  function nextQuestion() {
+    if (current < quiz.length - 1) {
+      current++;
+      loadQuestion();
+    } else {
+      document.getElementById("quiz-container").innerHTML = `
+        <h2>🎉 Quiz Completed!</h2>
+        <p id="score">Your Score: <strong>${score} / ${quiz.length}</strong></p>
+      `;
+    }
+  }
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
